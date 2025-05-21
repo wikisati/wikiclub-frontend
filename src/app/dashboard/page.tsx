@@ -19,7 +19,7 @@ export default function DashboardPage() {
   const searchParams = useSearchParams()
   const nameFromURL = searchParams.get("name")
 
-  const { name, wikiId, setUser, clearUser } = useUserStore()
+  const { name, setUser, clearUser } = useUserStore()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<Stats | null>(null)
 
