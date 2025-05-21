@@ -5,8 +5,8 @@ import { useSearchParams } from "next/navigation"
 import { Calendar } from "@/components/ui/calendar"
 import { useUserStore } from "@/lib/store"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Stats {
   wiki_id: string
@@ -33,7 +33,7 @@ export default function DashboardPage() {
       localStorage.setItem("wikiclub_name", nameFromURL)
       localStorage.setItem("wikiclub_id", "from-url")
     }
-    setTimeout(() => setLoading(false), 1000)
+    setTimeout(() => setLoading(false), 1200)
   }, [nameFromURL, setUser])
 
   useEffect(() => {
@@ -71,9 +71,9 @@ export default function DashboardPage() {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Calendar className="border rounded-md" />
+        <Calendar />
         <div className="p-4 border rounded-md">
-          <h2 className="text-lg font-semibold mb-2">📊 Contribution Overview</h2>
+          <h2 className="text-lg font-semibold mb-2">Contribution Overview</h2>
           {loading || !stats ? (
             <Skeleton className="h-24 w-full" />
           ) : (
@@ -106,7 +106,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="mt-8 border rounded-md p-4">
-        <h2 className="text-lg font-semibold mb-2">🌟 Upcoming Features</h2>
+        <h2 className="text-lg font-semibold mb-2">Upcoming Features</h2>
         <ul className="text-sm list-disc ml-4 text-muted-foreground">
           <li>GitHub-style contribution heatmap</li>
           <li>Top edited articles and projects</li>
