@@ -9,10 +9,10 @@ import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { format } from "date-fns"
 
-// Wrap only the component that uses useSearchParams in <Suspense>
 function DashboardContent() {
   const searchParams = useSearchParams()
   const nameFromURL = searchParams.get("name")
+  const tokenFromURL = searchParams.get("access_token")
 
   const { name, wikiId, setUser, clearUser } = useUserStore()
   const [loading, setLoading] = useState(true)
@@ -20,6 +20,10 @@ function DashboardContent() {
   const [monthlyStats, setMonthlyStats] = useState<Record<string, number>>({})
 
   useEffect(() => {
+    if (tokenFromURL) {
+      localStorage.setItem("wikiclub_token", tokenFromURL)
+    }
+
     const storedName = localStorage.getItem("wikiclub_name")
     const storedId = localStorage.getItem("wikiclub_id")
     if (storedName && storedId) {
@@ -30,13 +34,14 @@ function DashboardContent() {
       localStorage.setItem("wikiclub_id", "from-url")
     }
     setTimeout(() => setLoading(false), 1200)
-  }, [nameFromURL, setUser])
+  }, [tokenFromURL, nameFromURL, setUser])
 
   useEffect(() => {
-    if (wikiId && wikiId !== "from-url") {
+    const token = localStorage.getItem("wikiclub_token")
+    if (wikiId && wikiId !== "from-url" && token) {
       fetch(`https://wikiclub.onrender.com/api/stats`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("wikiclub_token")}`,
+          Authorization: `Bearer ${token}`,
         },
       })
         .then((res) => res.json())
@@ -50,8 +55,10 @@ function DashboardContent() {
 
   const handleLogout = () => {
     clearUser()
-    localStorage.clear()
-    toast("Logged out successfully")
+    localStorage.removeItem("wikiclub_token")
+    localStorage.removeItem("wikiclub_name")
+    localStorage.removeItem("wikiclub_id")
+    toast.success("Logged out successfully")
     window.location.href = "/"
   }
 

@@ -20,18 +20,30 @@ export default function Home() {
 
   const logout = () => {
     clearUser()
-    localStorage.clear()
+    localStorage.removeItem("wikiclub_token")
+    localStorage.removeItem("wikiclub_name")
+    localStorage.removeItem("wikiclub_id")
     toast.success("Logged out successfully")
     window.location.href = "/"
   }
 
   const fetchUserProfile = async () => {
+    const token = localStorage.getItem("wikiclub_token")
+    if (!token) return
+
     try {
       const res = await fetch("https://wikiclub.onrender.com/api/me", {
-        method: "GET",
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
-      if (!res.ok) return
+
+      if (!res.ok) {
+        console.warn("User not authenticated, clearing localStorage")
+        localStorage.removeItem("wikiclub_token")
+        return
+      }
+
       const data = await res.json()
       setUser({ name: data.name, wikiId: data.wiki_id })
     } catch (err) {
