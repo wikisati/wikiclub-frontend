@@ -1,27 +1,23 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { Calendar } from "@/components/ui/calendar"
 import { useUserStore } from "@/lib/store"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
+import { format } from "date-fns"
 
-interface Stats {
-  wiki_id: string
-  total_edits: number
-  total_bytes: number
-  active_months: Record<string, number>
-}
-
-export default function DashboardPage() {
+// Wrap only the component that uses useSearchParams in <Suspense>
+function DashboardContent() {
   const searchParams = useSearchParams()
   const nameFromURL = searchParams.get("name")
 
-  const { name, setUser, clearUser } = useUserStore()
+  const { name, wikiId, setUser, clearUser } = useUserStore()
   const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState<Stats | null>(null)
+  const [userInfo, setUserInfo] = useState<any>(null)
+  const [monthlyStats, setMonthlyStats] = useState<Record<string, number>>({})
 
   useEffect(() => {
     const storedName = localStorage.getItem("wikiclub_name")
@@ -37,16 +33,20 @@ export default function DashboardPage() {
   }, [nameFromURL, setUser])
 
   useEffect(() => {
-    const token = localStorage.getItem("wikiclub_token")
-    if (!token) return
-
-    fetch("https://wikiclub.onrender.com/api/stats", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => setStats(data))
-      .catch(() => toast.error("Failed to fetch stats"))
-  }, [])
+    if (wikiId && wikiId !== "from-url") {
+      fetch(`https://wikiclub.onrender.com/api/stats`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("wikiclub_token")}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setUserInfo(data)
+          setMonthlyStats(data.active_months || {})
+        })
+        .catch(() => setUserInfo(null))
+    }
+  }, [wikiId])
 
   const handleLogout = () => {
     clearUser()
@@ -71,37 +71,41 @@ export default function DashboardPage() {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Calendar />
+        <Calendar className="border rounded-md" />
         <div className="p-4 border rounded-md">
           <h2 className="text-lg font-semibold mb-2">Contribution Overview</h2>
-          {loading || !stats ? (
+          {loading ? (
             <Skeleton className="h-24 w-full" />
-          ) : (
+          ) : userInfo ? (
             <ul className="text-sm list-disc ml-4 text-muted-foreground">
-              <li>Total edits: {stats.total_edits}</li>
-              <li>Bytes added: {stats.total_bytes.toLocaleString()}</li>
-              <li>Active months: {Object.keys(stats.active_months).length}</li>
+              <li>Total edits: {userInfo.total_edits}</li>
+              <li>Bytes added: {userInfo.total_bytes.toLocaleString()}</li>
+              <li>Active months: {Object.keys(monthlyStats).length}</li>
             </ul>
+          ) : (
+            <p className="text-red-500">No contribution data found or failed to load.</p>
           )}
         </div>
       </div>
 
       <div className="mt-8 border rounded-md p-4">
         <h2 className="text-lg font-semibold mb-2">🔥 Monthly Contributions</h2>
-        {loading || !stats ? (
+        {loading ? (
           <Skeleton className="h-36 w-full" />
-        ) : (
+        ) : monthlyStats && Object.keys(monthlyStats).length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Object.entries(stats.active_months).map(([month, count]) => (
+            {Object.entries(monthlyStats).map(([month, count]) => (
               <div
                 key={month}
-                className="rounded-md border p-3 bg-green-100 dark:bg-green-900 hover:bg-green-200 dark:hover:bg-green-800"
+                className="rounded-md border p-3 bg-muted hover:bg-muted/80"
               >
                 <p className="text-sm text-muted-foreground">{month}</p>
                 <p className="text-lg font-bold">{count}</p>
               </div>
             ))}
           </div>
+        ) : (
+          <p className="text-destructive">No activity</p>
         )}
       </div>
 
@@ -115,5 +119,13 @@ export default function DashboardPage() {
         </ul>
       </div>
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Loading dashboard...</div>}>
+      <DashboardContent />
+    </Suspense>
   )
 }
