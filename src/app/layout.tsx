@@ -3,7 +3,7 @@
 import "@/styles/globals.css"
 import { ThemeProvider } from "next-themes"
 import { Toaster } from "@/components/ui/toaster"
-import Navbar from "@/components/Navbar"
+import Navbar from "@/components/navbar"
 import { useUserStore } from "@/lib/store"
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
