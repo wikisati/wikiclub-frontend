@@ -7,12 +7,11 @@ import { useUserStore } from "@/lib/store"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
-import { format } from "date-fns"
 
 function DashboardContent() {
   const searchParams = useSearchParams()
-  const nameFromURL = searchParams.get("name")
   const tokenFromURL = searchParams.get("access_token")
+  const nameFromURL = searchParams.get("name")
 
   const { name, wikiId, setUser, clearUser } = useUserStore()
   const [loading, setLoading] = useState(true)
@@ -24,34 +23,51 @@ function DashboardContent() {
       localStorage.setItem("wikiclub_token", tokenFromURL)
     }
 
-    const storedName = localStorage.getItem("wikiclub_name")
-    const storedId = localStorage.getItem("wikiclub_id")
-    if (storedName && storedId) {
-      setUser({ name: storedName, wikiId: storedId })
-    } else if (nameFromURL) {
+    if (nameFromURL) {
       setUser({ name: nameFromURL, wikiId: "from-url" })
       localStorage.setItem("wikiclub_name", nameFromURL)
       localStorage.setItem("wikiclub_id", "from-url")
+    } else {
+      const storedName = localStorage.getItem("wikiclub_name")
+      const storedId = localStorage.getItem("wikiclub_id")
+      if (storedName && storedId) {
+        setUser({ name: storedName, wikiId: storedId })
+      }
     }
-    setTimeout(() => setLoading(false), 1200)
+
+    setTimeout(() => setLoading(false), 1000)
   }, [tokenFromURL, nameFromURL, setUser])
 
   useEffect(() => {
-    const token = localStorage.getItem("wikiclub_token")
-    if (wikiId && wikiId !== "from-url" && token) {
-      fetch(`https://wikiclub.onrender.com/api/stats`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setUserInfo(data)
-          setMonthlyStats(data.active_months || {})
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem("wikiclub_token")
+      if (!token) return
+
+      try {
+        const res = await fetch("https://wikiclub.onrender.com/api/me", {
+          headers: { Authorization: `Bearer ${token}` },
         })
-        .catch(() => setUserInfo(null))
+
+        if (!res.ok) {
+          localStorage.clear()
+          return
+        }
+
+        const data = await res.json()
+        setUserInfo(data)
+
+        const monthlyRes = await fetch("https://wikiclub.onrender.com/api/monthly-stats", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        const monthlyData = await monthlyRes.json()
+        setMonthlyStats(monthlyData)
+      } catch (err) {
+        console.error("Error fetching user profile", err)
+      }
     }
-  }, [wikiId])
+
+    fetchUserInfo()
+  }, [setUser])
 
   const handleLogout = () => {
     clearUser()
@@ -68,9 +84,7 @@ function DashboardContent() {
         <h1 className="text-3xl font-bold">
           Welcome, <span className="text-blue-600 dark:text-blue-400">{name || "Contributor"}</span>!
         </h1>
-        <Button variant="destructive" onClick={handleLogout}>
-          Logout
-        </Button>
+        <Button variant="destructive" onClick={handleLogout}>Logout</Button>
       </div>
 
       <p className="mb-6 text-muted-foreground">
@@ -102,10 +116,7 @@ function DashboardContent() {
         ) : monthlyStats && Object.keys(monthlyStats).length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Object.entries(monthlyStats).map(([month, count]) => (
-              <div
-                key={month}
-                className="rounded-md border p-3 bg-muted hover:bg-muted/80"
-              >
+              <div key={month} className="rounded-md border p-3 bg-muted hover:bg-muted/80">
                 <p className="text-sm text-muted-foreground">{month}</p>
                 <p className="text-lg font-bold">{count}</p>
               </div>
