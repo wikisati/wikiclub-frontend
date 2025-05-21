@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 
 export default function Home() {
-  const { name, wikiId, setUser } = useUserStore()
+  const { name, wikiId, setUser, clearUser } = useUserStore()
 
   const login = async () => {
     try {
@@ -18,6 +18,13 @@ export default function Home() {
     }
   }
 
+  const logout = () => {
+    clearUser()
+    localStorage.clear()
+    toast.success("Logged out successfully")
+    window.location.href = "/"
+  }
+
   const fetchUserProfile = async () => {
     try {
       const res = await fetch("https://wikiclub.onrender.com/api/me", {
@@ -27,8 +34,8 @@ export default function Home() {
       if (!res.ok) return
       const data = await res.json()
       setUser({ name: data.name, wikiId: data.wiki_id })
-    } catch {
-      console.error("Error fetching user profile")
+    } catch (err) {
+      console.error("Error fetching user profile", err)
     }
   }
 
