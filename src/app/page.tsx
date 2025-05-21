@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 
 export default function Home() {
-  const { name, wikiId, setUser, logout } = useUserStore()
+  const { name, wikiId, setUser } = useUserStore()
 
   const login = async () => {
     try {
