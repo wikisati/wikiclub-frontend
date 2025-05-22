@@ -69,7 +69,7 @@ export default function Home() {
         <Button onClick={login}>Login with Wikipedia</Button>
       )}
       <footer className="mt-12 text-center text-sm text-muted-foreground">
-        Built with ❤️ by WikiClub SATI India· Powered by Wikimedia
+        Built with ❤️ by WikiClub SATI· Powered by Wikimedia
       </footer>
     </main>
   )
