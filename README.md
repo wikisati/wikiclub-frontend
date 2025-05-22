@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# WikiClub SATI
 
-## Getting Started
+**An open-source, student-led platform aligned with the Wikimedia mission of free knowledge for everyone.**
 
-First, run the development server:
+WikiClub SATI empowers SATI students and community contributors to log in with their existing Wikipedia credentials, track and visualize their Wikimedia contributions, and collaborate on campaigns and events—all in a secure, modern, deployment-ready web application.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+**Live Demo:**  
+- Frontend: https://wikiclub.in  
+- Backend:  https://wikiclub.onrender.com  
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Source Code:**  
+- Frontend: https://github.com/wikisati/wikiclub-frontend  
+- Backend:  https://github.com/wikisati/wikiclub-backend  
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Features
 
-## Learn More
+- **Wikimedia OAuth 2.0 Authentication**  
+  Secure “Login with Wikipedia” flow using MediaWiki’s OAuth2 endpoints.  
+- **User Dashboard**  
+  Real-time visualization of edits, article creations, and other contribution statistics.  
+- **Campaign & Event Collaboration**  
+  Discover and join upcoming editathons, workshops, and community drives.  
+- **Responsive, Accessible UI**  
+  Built with Tailwind CSS and Shadcn UI for utility-first, accessible design.  
+- **Lightweight State Management**  
+  Global store via Zustand, hydrated from session/local storage.  
+- **RESTful API Layer**  
+  Powered by Django REST Framework, with secure token and session handling.  
+- **CI/CD Pipelines**  
+  GitHub → Vercel (frontend) and GitHub → Render (backend) for zero-touch deployments.  
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Technology Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Layer         | Technology                             |
+|---------------|----------------------------------------|
+| **Frontend**  | Next.js 15 + React 19                  |
+|               | Tailwind CSS + Shadcn UI               |
+|               | Zustand                                |
+|               | Axios                                  |
+| **Backend**   | Django 5.2.1 + DRF                     |
+|               | PostgreSQL                             |
+|               | Gunicorn                               |
+| **Auth & DB** | MediaWiki OAuth 2.0                    |
+|               | JWT (HTTP-only cookies)               |
+| **Hosting**   | Vercel (frontend)                      |
+|               | Render (backend + Postgres service)    |
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Architecture & Flow
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Client** clicks “Login with Wikipedia” → `/api/auth/init` (Next.js → Django)  
+2. **Django** redirects to Wikimedia OAuth screen  
+3. User **grants permission** → Wikimedia redirects to `/api/auth/callback`  
+4. **Django** exchanges code for access token, fetches profile, stores/updates user  
+5. Redirect back to **Next.js** with token & username  
+6. **Zustand** hydrates state; dashboard fetches contribution stats via `/api/me`
+
+![OAuth2 Flow Diagram](docs/diagrams/Auth.png)
+
+---
+
+## Deployment
+
+### Backend (Render)
+
+- **Build Command:** `pip install -r requirements.txt`  
+- **Start Command:** `gunicorn wikiclub.wsgi:application`  
+
+### Frontend (Vercel)
+
+- **Framework Preset:** Next.js  
+- **Automatic Deploys:** Enabled on every Git push  
+
+---
+
+## API Endpoints
+
+| Method | Path                  | Description                              |
+|--------|-----------------------|------------------------------------------|
+| GET    | `/api/auth/init`      | Start Wikimedia OAuth2 login             |
+| GET    | `/api/auth/callback`  | Handle OAuth2 callback & token exchange  |
+| GET    | `/api/me`             | Fetch authenticated user profile & stats |
+| POST   | `/api/logout`         | Clear session and tokens                 |
+| POST   | `/api/token/refresh`  | Rotate/refresh access token              |
+
+---
+
+## Security Practices
+
+- **HTTP-only, Secure Cookies** for JWT storage  
+- **SameSite=None** to support cross-site OAuth flows  
+- **CSRF Protection** enabled in Django and Next.js  
+- **CORS** restricted to production domains only  
+- **Secrets** managed via environment variables (never committed)  
+- **Token Rotation** for long-lived sessions  
+
+---
+
+## Future Roadmap
+
+- **`/api/me` enhancements:** More granular stats, server-side caching  
+- **Heatmap visualization** of edit activity over time  
+- **Campaign/Event creation** and management module  
+- **OAuth2.1 with PKCE** and refresh token rotation  
+- **Community Analytics Dashboard:** Aggregate metrics, leaderboards  
+
+---
+
+## License
+
+This project is open-source and available under the [MIT License](LICENSE).
+
+---
+
+**Author:**  
+Dev Jadiya  
+India  
