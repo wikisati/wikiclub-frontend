@@ -58,7 +58,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground px-4">
       <h1 className="text-3xl font-bold mb-6">Welcome to WikiClub SATI</h1>
-      <p className="text-lg mb-4">
+      <p className="mt-12 text-center text-sm text-muted-foreground">
         Wiki Club SATI is an extra-curricular club(community), formed at Samrat Ashok Technological Institute, Vidisha. The club will create awareness about the Wikimedia projects and encourage active participation from students.
       </p>
       {wikiId ? (
