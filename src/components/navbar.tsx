@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/ModeToggle"
 
 const navItems = [
+  {href: "/calendar/index.html",label: "Calendar"},
   { href: "/dashboard", label: "Dashboard" },
   { href: "/events", label: "Events" },
   { href: "/leaderboard", label: "Leaderboard" },
+
 ]
 
 export default function Navbar() {

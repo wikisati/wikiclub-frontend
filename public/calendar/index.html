@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/evo-calendar.midnight-blue.min.css">
+    <link rel="stylesheet" href="css/evo-calendar.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;700&display=swap" rel="stylesheet">
+    <title>Calendar</title>
+</head>
+
+<body>
+    <div class="Hero">
+        <div id="calendar"></div> 
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+<script src="js/evo-calendar.min.js"></script>
+<script>
+    $(document).ready(function() {
+    $('#calendar').evoCalendar({
+
+        calendarEvents: [
+      {
+        id: 'event1', // Event's ID (required)
+        name: "12th Board Meeting", // Event name (required)
+        date: "June/27/2026", // Event date (required)
+        type: "holiday", // Event type (required)
+        everyYear: true // Same event every year (optional)
+      },
+      {
+        name: "Diff Post Final Work",
+        badge: "02/13 - 02/15", // Event badge (optional)
+        date: ["June/28/2025", "June/30/2025"], // Date range
+        description: "Diff Post work", // Event description (optional)
+        type: "event",
+        color: "#63d867" // Event custom color (optional)
+      },
+        {
+        id: 'event3', // Event's ID (required)
+        name: "13th Board Meeting", // Event name (required)
+        date: "July/1/2026", // Event date (required)
+        type: "holiday", // Event type (required)
+        everyYear: true // Same event every year (optional)
+      },
+           {
+        id: 'event4', // Event's ID (required)
+        name: "Medic Tree Closing", // Event name (required)
+        date: "July/5/2025", // Event date (required)
+        type: "holiday", // Event type (required)
+        everyYear: true // Same event every year (optional)
+      },
+    ]
+       
+    })
+})
+
+</script>
+    
+</body>
+<!-- Add jQuery library (required) -->
+
+
+</html>
