@@ -24,10 +24,17 @@
     $('#calendar').evoCalendar({
 
         calendarEvents: [
-      {
+        {
         id: 'event1', // Event's ID (required)
+        name: "MED Kickoff", // Event name (required)
+        date: "June/05/2025", // Event date (required)
+        type: "Event", // Event type (required)
+        everyYear: true // Same event every year (optional)
+      },
+      {
+        id: 'event2', // Event's ID (required)
         name: "12th Board Meeting", // Event name (required)
-        date: "June/27/2026", // Event date (required)
+        date: "June/27/2025", // Event date (required)
         type: "holiday", // Event type (required)
         everyYear: true // Same event every year (optional)
       },
@@ -42,15 +49,15 @@
         {
         id: 'event3', // Event's ID (required)
         name: "13th Board Meeting", // Event name (required)
-        date: "July/1/2026", // Event date (required)
-        type: "holiday", // Event type (required)
+        date: "July/1/2025", // Event date (required)
+        type: "Meet", // Event type (required)
         everyYear: true // Same event every year (optional)
       },
            {
         id: 'event4', // Event's ID (required)
         name: "Medic Tree Closing", // Event name (required)
         date: "July/5/2025", // Event date (required)
-        type: "holiday", // Event type (required)
+        type: "Session", // Event type (required)
         everyYear: true // Same event every year (optional)
       },
     ]
